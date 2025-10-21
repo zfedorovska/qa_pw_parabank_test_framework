@@ -1,7 +1,7 @@
 /// <reference types="node" />
 
 import type { Page } from '@playwright/test';
-import { test as genericBase } from './fixturesGeneric';
+import genericBase from './fixturesGeneric';
 import { AuthPage } from '../../src/ui/pages/AuthPage.js';
 
 type Fixtures = {
@@ -17,7 +17,9 @@ export const test = genericBase.extend<Fixtures>({
     const auth = new AuthPage(page);
     await auth.openHome();
     await auth.signIn(U, P);
-    await genericBase.expect(page.getByRole('heading', { name: 'Accounts Overview' })).toBeVisible();
+    await genericBase.expect(
+      page.getByRole('heading', { name: 'Accounts Overview' })
+    ).toBeVisible();
     await use(page);
   },
 
@@ -26,9 +28,12 @@ export const test = genericBase.extend<Fixtures>({
       const auth = new AuthPage(page);
       await auth.openHome();
       await auth.signIn(u, p);
-      await genericBase.expect(page.getByRole('heading', { name: 'Accounts Overview' })).toBeVisible();
+      await genericBase.expect(
+        page.getByRole('heading', { name: 'Accounts Overview' })
+      ).toBeVisible();
     });
   },
 });
 
 export const expect = test.expect;
+export default test;

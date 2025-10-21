@@ -1,28 +1,33 @@
-import { expect, testStep } from '../../common/helpers/pwHelpers.js';
+import { expect, testStep } from "../../common/helpers/pwHelpers.js";
 
 export class AuthPage {
   constructor(page, userId = 0) {
     this.page = page;
     this.userId = userId;
 
-    this.linkRegister = page.getByRole('link', { name: 'Register' });
+    this.linkRegister = page.getByRole("link", { name: "Register" });
     this.inputUsername = page.locator('input[name="username"]');
     this.inputPassword = page.locator('input[name="password"]');
-    this.btnLogin = page.getByRole('button', { name: 'Log In' });
+    this.btnLogin = page.getByRole("button", { name: "Log In" });
   }
 
   async openHome() {
-    await testStep('Go to home', async () =>
-      this.page.goto('https://parabank.parasoft.com/parabank/index.htm')
-    );
+    await testStep("Go to home", async () => {
+      await this.page.goto("https://parabank.parasoft.com/parabank/index.htm", 
+        { waitUntil: "domcontentloaded" });
+      await expect(this.btnLogin).toBeVisible();
+    }, this.userId);
   }
 
+  // ✅ await the click *inside* the step, and pass this.userId
   async openRegister() {
-    await testStep('Open Register form', async () => this.linkRegister.click(), this.userId);
+    await testStep("Open Register form", async () => {
+      await this.linkRegister.click();
+    }, this.userId);
   }
 
   async signIn(username, password) {
-    await testStep('Sign in', async () => {
+    await testStep("Sign in", async () => {
       await this.inputUsername.fill(username);
       await this.inputPassword.fill(password);
       await this.btnLogin.click();
@@ -30,8 +35,8 @@ export class AuthPage {
   }
 
   async expectLoginError() {
-    await testStep('Expect login error', async () => {
-      await expect(this.page.locator('#rightPanel .error')).toBeVisible();
+    await testStep("Expect login error", async () => {
+      await expect(this.page.locator("#rightPanel .error")).toBeVisible();
     }, this.userId);
   }
 }
