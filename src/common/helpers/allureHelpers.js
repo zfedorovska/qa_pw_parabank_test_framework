@@ -1,4 +1,4 @@
-import { camelCaseToPhrase, capitalize } from "./stringHelpers.js";
+import { camelCaseToPhrase, capitalize } from "./stringHelpers";
 
 export function parseTestTreeHierarchy(file) {
   const parts = (file || "")

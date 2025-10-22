@@ -5,10 +5,10 @@ export class FindTransactionsPage {
 
   async expectLoaded() {
     await testStep('Find Transactions page loaded', async () => {
+      await this.page.waitForURL(/findtrans\.htm/i);
       await expect(this.page.getByRole('heading'
         , { name: /Find Transactions/i })).toBeVisible();
       await expect(this.page.locator('#accountId')).toBeVisible();
-      await this.page.waitForURL(/findtrans\.htm/i);
     }, this.userId);
   }
 
@@ -16,8 +16,9 @@ export class FindTransactionsPage {
     await testStep(`Find by amount = ${amount}`, async () => {
       await this.expectLoaded();
 
-      // Select account (top dropdown)
-      await this.page.selectOption('#accountId', { index: accountIdx });
+      const accountSelect = this.page.locator('#accountId');
+      await accountSelect.waitFor({ state: 'visible' });
+      await accountSelect.selectOption({ index: accountIdx });
 
       const amountInput = this.page.locator('#amount');
       await amountInput.waitFor({ state: 'visible' });

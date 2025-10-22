@@ -1,4 +1,4 @@
-import { test } from '../../_fixtures/fixtures.js';
+import { test } from '../../_fixtures/fixtures';
 import * as allure from 'allure-js-commons';
 import { NavBar } from '../../../src/ui/components/NavBar.js';
 import { TransferFundsPage } from '../../../src/ui/pages/TransferFundsPage.js';

@@ -35,9 +35,26 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
 
   // Auto Allure suite hierarchy from file path
   addAllureTestHierarchy: [
-    async ({}, use, testInfo) => {
-      const fileName = testInfo.file;
-      const [parentSuite, suite, subSuite] = parseTestTreeHierarchy(fileName);
+    async ({ logger }, use, testInfo) => {
+      // normalize path (handles Windows backslashes & relative forms)
+      const fileName = testInfo.file.replace(/\\+/g, '/');
+
+      // guard the helper call; never let a throw break the fixture
+      let parts: string[] = [];
+      try {
+        parts = parseTestTreeHierarchy(fileName) ?? [];
+      } catch (e) {
+        logger?.error?.(
+          `parseTestTreeHierarchy failed for "${fileName}": ${String(e)}`
+        );
+        parts = [];
+      }
+
+      const [parentSuite, suite, subSuite] = [
+        parts[0] ?? undefined,
+        parts[1] ?? undefined,
+        parts[2] ?? undefined,
+      ];
 
       if (parentSuite) await allure.parentSuite(parentSuite);
       if (suite)       await allure.suite(suite);

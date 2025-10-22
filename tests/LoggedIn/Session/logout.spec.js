@@ -1,4 +1,4 @@
-import { test, expect } from '../../_fixtures/fixtures.js';
+import { test, expect } from '../../_fixtures/fixtures';
 import * as allure from 'allure-js-commons';
 import { NavBar } from '../../../src/ui/components/NavBar.js';
 
