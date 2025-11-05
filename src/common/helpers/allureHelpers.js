@@ -1,5 +1,7 @@
 import { camelCaseToPhrase, capitalize } from "./stringHelpers";
 
+const TEST_FILE_REGEX = /\.(spec|test)\.(t|j)sx?$/i;
+
 export function parseTestTreeHierarchy(file) {
   const parts = (file || "")
     .replace(/\\+/g, "/")
@@ -7,10 +9,12 @@ export function parseTestTreeHierarchy(file) {
     .split("/")
     .filter(Boolean);
 
-  // drop the filename if it's a test file
-  if (/\.(spec|test)\.(t|j)sx?$/i.test(parts.at(-1) || "")) parts.pop();
+  const lastPart = parts.at(-1) || "";
 
-  // prettify each segment: handles camelCase and also underscores/dashes
+  if (TEST_FILE_REGEX.test(lastPart)) {
+    parts.pop();
+  }
+
   return parts.map(s =>
     capitalize(
       camelCaseToPhrase(s.replace(/[_-]+/g, " ")).trim()

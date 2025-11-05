@@ -1,35 +1,71 @@
-// src/ui/pages/TransferFundsPage.js
 import { expect, testStep } from '../../common/helpers/pwHelpers.js';
 
+const TRANSFER_SUCCESS_HEADING = 'Transfer Complete!';
+const INVALID_AMOUNT_ERROR_TEXT = 'Please enter a valid amount.';
+
 export class TransferFundsPage {
-  constructor(page, userId = 0) { this.page = page; this.userId = userId; }
+  constructor(page, userId = 0) {
+    this.page = page;
+    this.userId = userId;
 
-  async transfer(amount, fromIdx = 0, toIdx = 0) {
-    await testStep(`Transfer amount=${amount}`, async () => {
-      await this.page.fill('#amount', String(amount));
-
-      await this.page.locator('#fromAccountId').waitFor({ state: 'visible' });
-      await this.page.locator('#toAccountId').waitFor({ state: 'visible' });
-
-      await this.page.selectOption('#fromAccountId', { index: fromIdx });
-      await this.page.selectOption('#toAccountId', { index: toIdx });
-
-      await this.page.click('input[value="Transfer"]');
-    }, this.userId);
+    this.amountInput = this.page.locator('#amount');
+    this.fromAccountSelect = this.page.locator('#fromAccountId');
+    this.toAccountSelect = this.page.locator('#toAccountId');
+    this.transferButton = this.page.locator('input[value="Transfer"]');
+    this.rightPanel = this.page.locator('#rightPanel');
+    this.successHeading = this.page.getByRole('heading', {
+      name: TRANSFER_SUCCESS_HEADING,
+    });
   }
 
-  async expectResult(amount) {
-    await testStep('Validate transfer result', async () => {
-      const n = Number(amount);
-      const ok = Number.isFinite(n) && n > 0;
+  async fillAmount(amount) {
+    await this.amountInput.fill(String(amount));
+  }
 
-      if (ok) {
-        await expect(this.page.getByRole('heading',
-           { name: 'Transfer Complete!' })).toBeVisible();
-      } else {
-        await expect(this.page.locator('#rightPanel'))
-          .toContainText(/Please enter a valid amount\.|The amount cannot be empty\./);
-      }
-    }, this.userId);
+  async selectFromAccountByIndex(index = 0) {
+    await this.fromAccountSelect.waitFor({ state: 'visible' });
+    await this.fromAccountSelect.selectOption({ index });
+  }
+
+  async selectToAccountByIndex(index = 0) {
+    await this.toAccountSelect.waitFor({ state: 'visible' });
+    await this.toAccountSelect.selectOption({ index });
+  }
+
+  async clickTransfer() {
+    await this.transferButton.click();
+  }
+
+  async submitTransfer(amount, fromIdx = 0, toIdx = 0) {
+    await testStep(
+      `Submit transfer amount=${amount}`,
+      async () => {
+        await this.fillAmount(amount);
+        await this.selectFromAccountByIndex(fromIdx);
+        await this.selectToAccountByIndex(toIdx);
+        await this.clickTransfer();
+      },
+      this.userId
+    );
+  }
+
+  async validateTransferSuccess() {
+    await testStep(
+      'Validate transfer success',
+      async () => {
+        await expect(this.successHeading).toBeVisible();
+      },
+      this.userId
+    );
+  }
+
+  async validateInvalidAmountError() {
+    await testStep(
+      'Validate invalid amount error',
+      async () => {
+        await expect(this.rightPanel).toContainText(INVALID_AMOUNT_ERROR_TEXT);
+      },
+      this.userId
+    );
   }
 }

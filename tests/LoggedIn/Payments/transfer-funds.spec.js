@@ -1,20 +1,30 @@
 import { test } from '../../_fixtures/fixtures';
 import * as allure from 'allure-js-commons';
-import { NavBar } from '../../../src/ui/components/NavBar.js';
+import { NavigationBar } from '../../../src/ui/components/NavigationBar.js';
 import { TransferFundsPage } from '../../../src/ui/pages/TransferFundsPage.js';
 
-const amounts = ['1', '25.50', '0', '-5', 'abc'];
+const cases = [
+  { amount: '1',     severity: 'critical', isValid: true  },
+  { amount: '25.50', severity: 'critical', isValid: true  },
+  { amount: '0',     severity: 'minor',    isValid: false },
+  { amount: '-5',    severity: 'minor',    isValid: false },
+  { amount: 'abc',   severity: 'minor',    isValid: false },
+];
 
-for (const amount of amounts) {
+cases.forEach(({ amount, severity, isValid }) => {
   test(`Transfer Funds amount="${amount}"`, async ({ loggedInPage: page }) => {
-    // eslint-disable-next-line max-len
-    allure.severity?.(['0', '-5', 'abc'].includes(amount) ? 'minor' : 'critical');
+    allure.severity?.(severity);
 
-    const nav = new NavBar(page);
+    const nav = new NavigationBar(page);
     const transfer = new TransferFundsPage(page);
 
     await nav.go.transferFunds();
-    await transfer.transfer(amount, 0, 0);
-    await transfer.expectResult(amount);
+    await transfer.submitTransfer(amount, 0, 0);
+
+    if (isValid) {
+      await transfer.validateTransferSuccess();
+    } else {
+      await transfer.validateInvalidAmountError();
+    }
   });
-}
+});

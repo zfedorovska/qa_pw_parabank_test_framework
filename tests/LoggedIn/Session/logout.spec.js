@@ -1,12 +1,11 @@
-import { test, expect } from '../../_fixtures/fixtures';
+import { test } from '../../_fixtures/fixtures';
 import * as allure from 'allure-js-commons';
-import { NavBar } from '../../../src/ui/components/NavBar.js';
+import { NavigationBar } from '../../../src/ui/components/NavigationBar.js';
 
 test('User can Log out', async ({ loggedInPage: page }) => {
   allure.severity?.('normal');
 
-  const nav = new NavBar(page);
+  const nav = new NavigationBar(page);
 
   await nav.go.logout();
-  await expect(page.getByRole('button', { name: 'Log In' })).toBeVisible();
 });

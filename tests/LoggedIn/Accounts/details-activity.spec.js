@@ -1,14 +1,15 @@
 import { test } from '../../_fixtures/fixtures';
 import * as allure from 'allure-js-commons';
-import { NavBar } from '../../../src/ui/components/NavBar.js';
+import { NavigationBar } from '../../../src/ui/components/NavigationBar.js';
 import { AccountsOverviewPage } from '../../../src/ui/pages/AccountsOverviewPage.js';
 import { AccountDetailsPage } from '../../../src/ui/pages/AccountDetailsPage.js';
 
-test('Account Details & Activity filtering works'
-  , async ({ loggedInPage: page }) => {
+test('Account Details & Activity filtering works', async ({
+  loggedInPage: page,
+}) => {
   allure.severity?.('normal');
 
-  const nav = new NavBar(page);
+  const nav = new NavigationBar(page);
   const overview = new AccountsOverviewPage(page);
   const details = new AccountDetailsPage(page);
 

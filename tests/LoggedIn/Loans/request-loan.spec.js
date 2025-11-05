@@ -1,6 +1,6 @@
 import { test } from '../../_fixtures/fixtures';
 import * as allure from 'allure-js-commons';
-import { NavBar } from '../../../src/ui/components/NavBar.js';
+import { NavigationBar } from '../../../src/ui/components/NavigationBar.js';
 import { RequestLoanPage } from '../../../src/ui/pages/RequestLoanPage.js';
 
 const cases = [
@@ -9,15 +9,15 @@ const cases = [
   { amount: '0',    down: '0',   severity: 'minor'    },
 ];
 
-for (const c of cases) {
-  test(`Request Loan amount=${c.amount} down=${c.down}`, async ({ loggedInPage: page }) => {
-    allure.severity?.(c.severity);
+cases.forEach(({ amount, down, severity }) => {
+  test(`Request Loan amount=${amount} down=${down}`, async ({ loggedInPage: page }) => {
+    allure.severity?.(severity);
 
-    const nav = new NavBar(page);
+    const nav = new NavigationBar(page);
     const loan = new RequestLoanPage(page);
 
     await nav.go.requestLoan();
-    await loan.apply(c.amount, c.down, 0);
+    await loan.apply(amount, down, 0);
     await loan.expectDecision();
   });
-}
+});

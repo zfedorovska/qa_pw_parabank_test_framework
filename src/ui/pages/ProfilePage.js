@@ -1,5 +1,7 @@
 import { testStep, expect } from "../../common/helpers/pwHelpers.js";
 
+const PROFILE_UPDATED_TEXT = /Profile Updated/i;
+
 export class ProfilePage {
   constructor(page, userId = 0) {
     this.page = page;
@@ -9,9 +11,13 @@ export class ProfilePage {
     this.rightPanel = page.locator("#rightPanel");
   }
 
+  async waitForStreetInput() {
+    await this.street.waitFor({ state: "visible" });
+  }
+
   async updateStreet(value) {
     await testStep(`Update street to "${value}"`, async () => {
-      await this.street.waitFor({ state: "visible" });  // ✅ ensure page ready
+      await this.waitForStreetInput();
       await this.street.fill(value);
       await this.updateBtn.click();
     }, this.userId);
@@ -19,8 +25,13 @@ export class ProfilePage {
 
   async expectUpdated() {
     await testStep("Expect profile updated", async () => {
-      // Parabank shows a confirmation heading
-      await expect(this.rightPanel).toContainText(/Profile updated|Your updated address/i);
+      await expect(this.rightPanel).toContainText(PROFILE_UPDATED_TEXT);
+    }, this.userId);
+  }
+
+  async expectStreetValue(value) {
+    await testStep(`Expect street = "${value}"`, async () => {
+      await expect(this.street).toHaveValue(value);
     }, this.userId);
   }
 }
